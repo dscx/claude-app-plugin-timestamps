@@ -1,14 +1,14 @@
 {
   "name": "claude-timestamps",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Timestamps a Claude Code conversation: a per-turn stamp in the transcript, a millisecond-accurate log, and a /timestamps command that renders a timeline of any session.",
   "author": {
     "name": "Dan Chamberlain",
     "email": "dnchmbrln@gmail.com",
-    "url": "https://github.com/dnchmbrln"
+    "url": "https://github.com/dscx"
   },
-  "homepage": "https://github.com/dnchmbrln/claude-timestamps",
-  "repository": "https://github.com/dnchmbrln/claude-timestamps",
+  "homepage": "https://github.com/dscx/claude-app-plugin-timestamps",
+  "repository": "https://github.com/dscx/claude-app-plugin-timestamps",
   "license": "MIT",
   "keywords": [
     "timestamps",

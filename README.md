@@ -10,16 +10,24 @@ recorded before you installed the plugin, since the transcript already holds the
 
 ## Install
 
-This plugin is not published to a public repository yet, so install it from a local
-checkout of this directory:
+From inside Claude Code:
 
 ```
-claude plugin marketplace add /path/to/claude-timestamps
+/plugin marketplace add dscx/claude-app-plugin-timestamps
+/plugin install claude-timestamps@claude-timestamps
+```
+
+Or from a shell:
+
+```
+claude plugin marketplace add dscx/claude-app-plugin-timestamps
 claude plugin install claude-timestamps@claude-timestamps
 ```
 
-The GitHub shorthand — `/plugin marketplace add dnchmbrln/claude-timestamps` — will only
-work once the repository is public at that path. Until then it fails with a 404.
+The repository is `claude-app-plugin-timestamps` but the plugin and its marketplace are
+both named `claude-timestamps`, which is why the second command does not repeat the
+repository name. To work on the plugin instead, point the marketplace at a local checkout:
+`claude plugin marketplace add /path/to/claude-app-plugin-timestamps`.
 
 Restart Claude Code afterwards. Hook definitions are read when a session starts, so an
 already-running session will not pick up the plugin until it is restarted.
