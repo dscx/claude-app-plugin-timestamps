@@ -1,0 +1,16 @@
+{
+  "description": "claude-timestamps: per-message logging via MessageDisplay. Isolated in its own file because an unrecognised event key silently disables every hook in the file that contains it. On a CLI that does not know MessageDisplay, only this file goes quiet; the Stop, UserPromptSubmit and SessionStart hooks in hooks.json keep working.",
+  "hooks": {
+    "MessageDisplay": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/message-display.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

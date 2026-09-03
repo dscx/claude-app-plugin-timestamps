@@ -1,0 +1,25 @@
+{
+  "name": "claude-timestamps",
+  "version": "0.1.1",
+  "description": "Timestamps a Claude Code conversation: a per-turn stamp in the transcript, a millisecond-accurate log, and a /timestamps command that renders a timeline of any session.",
+  "author": {
+    "name": "Dan Chamberlain",
+    "email": "dnchmbrln@gmail.com",
+    "url": "https://github.com/dnchmbrln"
+  },
+  "homepage": "https://github.com/dnchmbrln/claude-timestamps",
+  "repository": "https://github.com/dnchmbrln/claude-timestamps",
+  "license": "MIT",
+  "keywords": [
+    "timestamps",
+    "hooks",
+    "transcript",
+    "logging",
+    "timeline",
+    "session"
+  ],
+  "hooks": [
+    "./hooks/hooks.json",
+    "./hooks/messages.json"
+  ]
+}

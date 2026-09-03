@@ -1,0 +1,25 @@
+{
+  "name": "claude-timestamps",
+  "owner": {
+    "name": "Dan Chamberlain",
+    "email": "dnchmbrln@gmail.com",
+    "url": "https://github.com/dnchmbrln"
+  },
+  "description": "Single-plugin marketplace for claude-timestamps.",
+  "plugins": [
+    {
+      "name": "claude-timestamps",
+      "source": "./",
+      "description": "Timestamps a Claude Code conversation: a per-turn stamp in the transcript, a millisecond-accurate log, and a /timestamps command that renders a timeline of any session.",
+      "category": "productivity",
+      "keywords": [
+        "timestamps",
+        "hooks",
+        "transcript",
+        "logging",
+        "timeline",
+        "session"
+      ]
+    }
+  ]
+}

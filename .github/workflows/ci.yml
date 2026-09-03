@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Advisory only: shellcheck flags style as well as substance, and it is
+      # not installed on every runner image.
+      - name: shellcheck (advisory)
+        continue-on-error: true
+        run: |
+          if ! command -v shellcheck >/dev/null 2>&1; then
+            echo "shellcheck not installed on this runner; skipping"
+            exit 0
+          fi
+          shellcheck --version
+          found=0
+          for f in $(find . -path ./.git -prune -o -type f -name '*.sh' -print); do
+            found=1
+            echo "--- $f"
+            shellcheck -s sh "$f"
+          done
+          if [ "$found" = "0" ]; then echo "no .sh files"; fi
+
+      # Hard gate. A shell syntax error in a Stop hook is the single most
+      # dangerous failure mode in this plugin: the shell exits with status two,
+      # which Claude Code reads as "do not stop" and turns into an agent loop.
+      - name: syntax gate (sh -n and bash -n)
+        run: |
+          status=0
+          found=0
+          for f in $(find . -path ./.git -prune -o -type f -name '*.sh' -print); do
+            found=1
+            echo "--- $f"
+            sh -n "$f"   || status=1
+            bash -n "$f" || status=1
+          done
+          if [ "$found" = "0" ]; then echo "no .sh files to check"; fi
+          exit $status
+
+      # Hard gate. These strings must never reach a hook's stdout or its source.
+      # They are written with a bracketed final character so this workflow file
+      # does not match its own patterns.
+      - name: forbidden control strings
+        run: |
+          status=0
+          for pat in 'decisio[n]' 'permissionDecisio[n]' 'exit[ ][2]'; do
+            if grep -R -n -E "$pat" hooks .claude-plugin commands scripts tests 2>/dev/null; then
+              echo "::error::forbidden string matching $pat is present in the plugin tree"
+              status=1
+            fi
+          done
+          # The loop keyword is legal inside the JavaScript renderer, which is
+          # never a hook, so scripts/ is exempt from this one pattern.
+          for pat in 'continu[e]'; do
+            if grep -R -n -E "$pat" hooks .claude-plugin commands tests 2>/dev/null; then
+              echo "::error::forbidden string matching $pat is present in the hook surface"
+              status=1
+            fi
+          done
+          exit $status
+
+      - name: node --check on the renderer
+        run: |
+          status=0
+          found=0
+          for f in $(find . -path ./.git -prune -o -type f -name '*.mjs' -print); do
+            found=1
+            echo "--- $f"
+            node --check "$f" || status=1
+          done
+          if [ "$found" = "0" ]; then echo "no .mjs files to check"; fi
+          exit $status
+
+      - name: test suite
+        run: sh tests/run-tests.sh
+
+      # The manifest is the single point of failure for installability, and the
+      # two invocations below are NOT redundant: `validate .` resolves to
+      # .claude-plugin/marketplace.json and never opens plugin.json, because
+      # both manifests share that directory. Only the explicit path validates
+      # the plugin manifest.
+      - name: claude plugin validate (marketplace and plugin manifests)
+        run: |
+          status=0
+          if npx --yes @anthropic-ai/claude-code@latest --version >/dev/null 2>&1; then
+            npx --yes @anthropic-ai/claude-code@latest plugin validate . --strict || status=1
+            npx --yes @anthropic-ai/claude-code@latest plugin validate .claude-plugin/plugin.json --strict || status=1
+          else
+            echo "::notice::claude CLI could not be fetched on this runner; manifest validation skipped"
+          fi
+          exit $status
+
+      - name: manifest is valid JSON
+        run: |
+          status=0
+          found=0
+          for f in $(find .claude-plugin hooks -type f -name '*.json' 2>/dev/null); do
+            found=1
+            node -e 'JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"))' "$f" \
+              && echo "ok   $f" \
+              || { echo "::error file=$f::invalid JSON"; status=1; }
+          done
+          if [ "$found" = "0" ]; then echo "no manifest files yet"; fi
+          exit $status

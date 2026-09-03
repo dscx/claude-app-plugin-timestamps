@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# macOS
+.DS_Store
+
+# logs
+*.log
+
+# local scratch — not part of the plugin
+/scratch/
+/tmp/
+*.local
+*.local.*
+.env.local
+tests/.tmp/
+*.tmp
+*.orig
+*.rej
