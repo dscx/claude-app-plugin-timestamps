@@ -8,6 +8,12 @@ assistant messages — message metadata only, never message text. And `/timestam
 the session transcript on disk and prints a timestamped timeline, which works on sessions
 recorded before you installed the plugin, since the transcript already holds the timing.
 
+![Hovering a session in Claude Code's sidebar reveals an exact timestamp as a tooltip, over a relative time like "5 hours ago"](docs/example.png)
+
+This is as precise as Claude Code gets today: hover a session in the sidebar for an exact
+time, tucked behind a relative one. Nothing that specific exists inside a conversation, and
+nothing exists per turn. This plugin puts a real clock there instead.
+
 ## Install
 
 From inside Claude Code:
