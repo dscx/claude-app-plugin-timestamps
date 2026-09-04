@@ -1,6 +1,6 @@
 {
   "name": "claude-timestamps",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Timestamps a Claude Code conversation: a per-turn stamp in the transcript, a millisecond-accurate log, and a /timestamps command that renders a timeline of any session.",
   "author": {
     "name": "Dan Chamberlain",
@@ -19,7 +19,6 @@
     "session"
   ],
   "hooks": [
-    "./hooks/hooks.json",
     "./hooks/messages.json"
   ]
 }

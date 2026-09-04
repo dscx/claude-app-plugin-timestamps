@@ -47,11 +47,19 @@ stdout from a `Stop` hook renders nothing: the renderer maps that result to null
 
 ## Why the hooks are split across two files
 
-`plugin.json` names two hook files:
+`plugin.json` names one hook file, and gets a second for free:
 
 ```json
-"hooks": ["./hooks/hooks.json", "./hooks/messages.json"]
+"hooks": ["./hooks/messages.json"]
 ```
+
+`hooks/hooks.json` is **not** listed, and must not be: the CLI loads that path automatically
+by convention, so a manifest that also names it is rejected as a duplicate — "Duplicate
+hooks file detected" — and the whole plugin's status becomes "failed to load". The `hooks`
+array is for *additional* hook files only. This bit us: 0.1.2 listed both paths and was
+dead on arrival on every CLI carrying the check, including the one bundled in the desktop
+app, and `claude plugin validate --strict` passes either form, so only `claude plugin list`
+surfaces it. Run it after any manifest change.
 
 An unrecognised event key does not merely disable that one entry. It disables **every**
 hook in the file that contains it. When `plugin.json` gives `hooks` as an array of files,
@@ -73,6 +81,9 @@ The array form matters for a second reason: hook files require the `{"hooks": {.
 wrapper, whereas an inline `hooks` value in `plugin.json` is the bare event map. The two
 shapes are not interchangeable, and a wrapper in the wrong place is another silent
 non-load.
+
+A plugin whose only hooks live in `hooks/hooks.json` should omit the `hooks` key entirely
+and let the auto-load handle it.
 
 Every entry sets `"timeout": 5`. The default command-hook timeout is 600 seconds, which
 for a hook that runs on every turn is not a timeout at all — it is a way to hang a session
