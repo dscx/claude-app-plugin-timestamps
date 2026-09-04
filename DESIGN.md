@@ -53,13 +53,24 @@ stdout from a `Stop` hook renders nothing: the renderer maps that result to null
 "hooks": ["./hooks/messages.json"]
 ```
 
-`hooks/hooks.json` is **not** listed, and must not be: the CLI loads that path automatically
-by convention, so a manifest that also names it is rejected as a duplicate — "Duplicate
-hooks file detected" — and the whole plugin's status becomes "failed to load". The `hooks`
-array is for *additional* hook files only. This bit us: 0.1.2 listed both paths and was
-dead on arrival on every CLI carrying the check, including the one bundled in the desktop
-app, and `claude plugin validate --strict` passes either form, so only `claude plugin list`
-surfaces it. Run it after any manifest change.
+`hooks/hooks.json` is **not** listed, and should not be: the CLI loads that path
+automatically by convention, so a manifest that also names it is rejected as a duplicate —
+"Duplicate hooks file detected" — and the plugin's status in `claude plugin list` becomes
+"failed to load". The `hooks` array is for *additional* hook files only. 0.1.2 listed both
+paths and carried that error on every CLI with the check, including the one bundled in the
+desktop app.
+
+Be precise about what that error costs, because the wording invites an overreaction: it is
+**cosmetic today**. Measured on 2026-09-04, a session running a "failed to load"
+`claude-timestamps` still wrote `turn_start`, `turn_end` *and* `message` records
+throughout — so the auto-loaded `hooks.json` and the manifest-referenced `messages.json`
+both fired, and `/timestamps` stayed available. Nothing observable was broken. The reason
+to fix it anyway is that the manifest genuinely violates the contract the CLI states, a
+loud permanent error trains you to ignore `plugin list`, and nothing promises the next
+version will keep degrading this gently.
+
+`claude plugin validate --strict` passes either form, so only `claude plugin list` surfaces
+it. Run it after any manifest change.
 
 An unrecognised event key does not merely disable that one entry. It disables **every**
 hook in the file that contains it. When `plugin.json` gives `hooks` as an array of files,
