@@ -16,27 +16,54 @@ nothing exists per turn. This plugin puts a real clock there instead.
 
 ## Install
 
-From inside Claude Code:
+Three routes to the same result — pick whichever matches where you are.
+
+### In the Claude Code app
+
+Everything is in the UI, no terminal needed:
+
+> **Settings** → **Extensions** → **Browse Extensions** → **Plugins** → **Add** → **Add Marketplace**
+
+Paste the repository when it asks for a marketplace:
+
+```
+dscx/claude-app-plugin-timestamps
+```
+
+Adding the marketplace lists the plugins inside it; install **claude-timestamps** from that list.
+
+### In a session
 
 ```
 /plugin marketplace add dscx/claude-app-plugin-timestamps
 /plugin install claude-timestamps@claude-timestamps
 ```
 
-Or from a shell:
+### From a shell
 
 ```
 claude plugin marketplace add dscx/claude-app-plugin-timestamps
 claude plugin install claude-timestamps@claude-timestamps
 ```
 
-The repository is `claude-app-plugin-timestamps` but the plugin and its marketplace are
-both named `claude-timestamps`, which is why the second command does not repeat the
-repository name. To work on the plugin instead, point the marketplace at a local checkout:
-`claude plugin marketplace add /path/to/claude-app-plugin-timestamps`.
+### Why the names do not match
 
-Restart Claude Code afterwards. Hook definitions are read when a session starts, so an
-already-running session will not pick up the plugin until it is restarted.
+The repository is `claude-app-plugin-timestamps`. The marketplace it defines, and the single plugin inside that
+marketplace, are both called `claude-timestamps`. So the install step never repeats the repository
+name, and `claude-timestamps@claude-timestamps` is not a typo — it reads *plugin* `@` *marketplace*, which
+happen to share a name here.
+
+To develop against a local checkout, point the marketplace at a directory instead:
+
+```
+claude plugin marketplace add /path/to/claude-app-plugin-timestamps
+```
+
+### Then open a new session
+
+Hook definitions are read when a session starts, so a session that was already open keeps
+running whatever it loaded. Opening a new session is enough — you do not need to quit the
+app.
 
 ### Updating
 
